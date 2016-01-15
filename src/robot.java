@@ -11,9 +11,22 @@ public class robot {
 	UnregulatedMotor left; 
 	UnregulatedMotor right;
 	
+	double distancePerTick;
+	double ticksPerRotation;
+	double radiansPerTick;
+	
 	public robot(){
 		this.left = new UnregulatedMotor(MotorPort.A);
-		this.right = new UnregulatedMotor(MotorPort.C); 
+		this.right = new UnregulatedMotor(MotorPort.D); 
+		left.setPower(55);
+	    right.setPower(55);
+	    
+	    distancePerTick = (Math.PI*0.054)/360;
+	    ticksPerRotation = (Math.PI*0.6)/ distancePerTick;
+	    radiansPerTick = (2*Math.PI)/ ticksPerRotation;
+	}
+	
+	public void resetPower(){
 		left.setPower(55);
 	    right.setPower(55);
 	}
@@ -50,37 +63,100 @@ public class robot {
 	    left.stop();
 	}
 	
-	public void circle(){
+	public void driveCircle(){
 		left.resetTachoCount();
 		right.setPower(0);
-		while(left.getTachoCount() < 1500){
+		while(left.getTachoCount() < 1700){
 			left.forward();
 		}
 	    left.stop();
+	    resetPower();
+	}
+	
+	public void driveRectangle(){
+		driveStraight(2000);
+		turnRight();
+		driveStraight(1000);
+		turnRight();
+		driveStraight(2000);
+		turnRight();
+		driveStraight(1000);
+	}
+	
+	public void driveFigureEight(){
+		left.resetTachoCount();
+		right.setPower(0);
+		while(left.getTachoCount() < 850){
+			left.forward();
+		}
+	    left.stop();
+	    
+	    right.resetTachoCount();
+	    right.setPower(55);
+		left.setPower(0);
+		while(right.getTachoCount() < 1700){
+			right.forward();
+		}
+	    right.stop();
+	    
+	    left.resetTachoCount();
+	    left.setPower(55);
+		right.setPower(0);
+		while(left.getTachoCount() < 850){
+			left.forward();
+		}
+	    left.stop();
+	    
+	    resetPower();
+	}
+	
+	public void deadReckoning(int [][] command){
+		for(int i = 0; i<3; i++){
+			left.setPower(command[i][0]);
+			right.setPower(command[i][1]);
+			left.resetTachoCount();
+			right.resetTachoCount();
+			right.forward();
+			left.forward();
+			
+			long timer = System.currentTimeMillis();
+			
+			while(System.currentTimeMillis()-timer < command[i][2]*1000){
+				
+				
+				
+			}
+			
+			//Delay.msDelay(command[i][2]*1000);
+			
+			right.stop();
+			left.stop();
+			
+		}
+		
 	}
 	
 	public static void main(String[] args) {
 
 		robot ev3 = new robot();
-        
-		///ev3.driveStraight(2000);
-        
-		//ev3.turnRight();
-		/*
-		ev3.driveStraight(1000);
 		
-		ev3.turnRight();
+		//ev3.driveRectangle();
 		
-		ev3.driveStraight(2000);
+		//Delay.msDelay(500);
 		
-		ev3.turnRight();
+		//ev3.driveCircle();
 		
-		ev3.driveStraight(1000);
+		//Delay.msDelay(500);
 		
-    	Button.waitForAnyPress();
-    	*/
+		//ev3.driveFigureEight();
 		
-		ev3.circle();
+		int[][] command = {
+			      { 80, 60, 2},
+			      { 60, 60, 1},
+			      {-50, 80, 2}
+			    };
+		
+		ev3.deadReckoning(command);
 		
 	}
 
