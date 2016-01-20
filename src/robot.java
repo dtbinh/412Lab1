@@ -17,10 +17,12 @@ public class robot {
 	double radiansPerTick;
 	
 	public robot(){
+
 		this.left = new NXTMotor(MotorPort.A);
 		this.right = new NXTMotor(MotorPort.D); 
 		left.setPower(55);
 	    right.setPower(55);
+
 	    
 	    distancePerTick = (Math.PI*0.054)/360;
 	    ticksPerRotation = (Math.PI*0.6)/ distancePerTick;
@@ -137,6 +139,7 @@ public class robot {
 		
 	}
 	
+
 	public void turnAngle(double angle){
 		int ticks = (int) ((Math.toRadians(angle) * 2) / this.radiansPerTick); 
 		
@@ -151,6 +154,7 @@ public class robot {
 		
 	}
 	
+
 	public static void main(String[] args) {
 
 		robot ev3 = new robot();
@@ -165,16 +169,7 @@ public class robot {
 		
 		//ev3.driveFigureEight();
 		
-		/*
-		int[][] command = {
-			      { 80, 60, 2},
-			      { 60, 60, 1},
-			      {-50, 80, 2}
-			    };
-		
-		ev3.deadReckoning(command);
-		*/
-		ev3.turnAngle(90);
+
 		
 	}
 
