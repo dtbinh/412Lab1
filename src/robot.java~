@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
 *Version 0.8.1-beta
 */
 import lejos.hardware.Button;
@@ -11,19 +12,34 @@ import lejos.utility.Delay;
 public class robot {
 	EncoderMotor left; 
 	EncoderMotor right;
+=======
+*Version 0.9.1-beta
+*/
+import lejos.hardware.Button;
+import lejos.hardware.port.MotorPort;
+import lejos.utility.Delay;
+import lejos.hardware.motor.UnregulatedMotor;
+
+
+public class robot {
+	UnregulatedMotor left; 
+	UnregulatedMotor right;
+>>>>>>> a7502fa360ee960f5332404d1ad5afdb2b1af287
 	
 	double distancePerTick;
 	double ticksPerRotation;
 	double radiansPerTick;
 	
 	public robot(){
-
+<<<<<<< HEAD
 		this.left = new NXTMotor(MotorPort.A);
 		this.right = new NXTMotor(MotorPort.D); 
+=======
 		this.left = new UnregulatedMotor(MotorPort.A);
 		this.right = new UnregulatedMotor(MotorPort.D); 
+>>>>>>> a7502fa360ee960f5332404d1ad5afdb2b1af287
 		left.setPower(55);
-	    	right.setPower(55);
+	    right.setPower(55);
 	    
 	    distancePerTick = (Math.PI*0.054)/360;
 	    ticksPerRotation = (Math.PI*0.6)/ distancePerTick;
@@ -140,7 +156,7 @@ public class robot {
 		
 	}
 	
-
+<<<<<<< HEAD
 	public void turnAngle(double angle){
 		int ticks = (int) ((Math.toRadians(angle) * 2) / this.radiansPerTick); 
 		
@@ -155,7 +171,8 @@ public class robot {
 		
 	}
 	
-
+=======
+>>>>>>> a7502fa360ee960f5332404d1ad5afdb2b1af287
 	public static void main(String[] args) {
 
 		robot ev3 = new robot();
@@ -170,7 +187,22 @@ public class robot {
 		
 		//ev3.driveFigureEight();
 		
-
+<<<<<<< HEAD
+		/*
+=======
+>>>>>>> a7502fa360ee960f5332404d1ad5afdb2b1af287
+		int[][] command = {
+			      { 80, 60, 2},
+			      { 60, 60, 1},
+			      {-50, 80, 2}
+			    };
+		
+		ev3.deadReckoning(command);
+<<<<<<< HEAD
+		*/
+		ev3.turnAngle(90);
+=======
+>>>>>>> a7502fa360ee960f5332404d1ad5afdb2b1af287
 		
 	}
 
