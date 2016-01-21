@@ -22,8 +22,8 @@ public class Robot {
 		left.setPower(power);
 	    right.setPower(power);
 	    
-	    distancePerTick = (Math.PI*0.054)/360;
-	    ticksPerRotation = (Math.PI*0.06)/ distancePerTick;
+	    distancePerTick = (Math.PI*0.056)/360;
+	    ticksPerRotation = (2*Math.PI*0.05875)/ distancePerTick;
 	    radiansPerTick = (2*Math.PI)/ ticksPerRotation;
 	    this.heading = Math.toRadians(heading);
 	    this.x = x;
@@ -74,12 +74,16 @@ public class Robot {
 	public void driveRectangle(){
 		driveStraight(2000);
 		turnAngle(90);
+		//turnRight();
 		driveStraight(1000);
 		turnAngle(90);
+		//turnRight();
 		driveStraight(2000);
 		turnAngle(90);
+		//turnRight();
 		driveStraight(1000);
 		turnAngle(90);
+		//turnRight();
 	}
 	
 	public void driveFigureEight(){
@@ -119,39 +123,31 @@ public class Robot {
 			left.resetTachoCount();
 			right.resetTachoCount();
 			
-			/*
-			if(command[i][0] < 0){
-				left.backward();
-			}else{
-				left.forward();
-			}
-			if(command[i][1] < 0){
-				right.backward();
-			}else{
-				right.forward();
-			}
-			*/
 			left.forward();
 			right.forward();
 			
 			long timer = System.currentTimeMillis();
 			
 			while(System.currentTimeMillis()-timer < command[i][2]*1000){
-				distance = this.distancePerTick*(left.getTachoCount() +
-											right.getTachoCount())/2;
+				distance = distancePerTick*(left.getTachoCount()+right.getTachoCount())/2;
+				
+				deltaH = (right.getTachoCount() - left.getTachoCount())
+											*this.radiansPerTick / 2;
 				
 				deltaX = distance * Math.cos(this.heading);
 				deltaY = distance * Math.sin(this.heading);
-				deltaH = (right.getTachoCount() - left.getTachoCount())
-											*this.radiansPerTick / 2;
+				
 				this.x += deltaX;
 				this.y += deltaY;
 				this.heading += deltaH;
 				
+				//System.out.println("X pos(cm): " + Math.round(this.x*100));
+				//System.out.println("Y pos(cm): " + Math.round(this.y*100));		
+				
 				if(this.heading < 0){
-					this.heading += 360;
-				}else if(this.heading > 360){
-					this.heading -= 360;
+					this.heading += 2*Math.PI;
+				}else if(this.heading > 2*Math.PI){
+					this.heading -= 2*Math.PI;
 				}
 				
 				left.resetTachoCount();
@@ -179,24 +175,43 @@ public class Robot {
 		System.out.println("Turning: " + angle + " degrees");
 		int ticks = (int) ((Math.toRadians(Math.abs(angle)) * 2) / this.radiansPerTick);
 
-		left.setPower(power);
-		right.setPower(power);
+		
 		
 		if(angle < 0){
 			right.resetTachoCount();
 			while( right.getTachoCount() <= ticks){
+				left.setPower(0);
+				right.setPower(power);
 				right.forward();
-				left.backward();
+				//left.backward();
 	    	}
 		}else{
 			left.resetTachoCount();
 			while( left.getTachoCount() <= ticks){
+				left.setPower(power);
+				right.setPower(0);
 				left.forward();
-				right.backward();
+				//right.backward();
 	    	}	
 		}
 		right.stop();
 	    left.stop();
+	}
+	
+	public void driveDistance(double distance){
+		double ticks = distance/this.distancePerTick;
+		
+		left.setPower(power);
+		right.setPower(power);
+		left.resetTachoCount();
+		right.resetTachoCount();
+		while((left.getTachoCount() < ticks) || (right.getTachoCount() < ticks)){
+			left.forward();
+			right.forward();
+		}
+		
+		left.stop();
+		right.stop();
 	}
 	
 	public static void main(String[] args) {
@@ -212,7 +227,11 @@ public class Robot {
 			      {-50, 80, 2}
 			    };
 		
-		robot.deadReckoning(command);
+		//robot.deadReckoning(command);
+		robot.driveRectangle();
+		//robot.turnAngle(-90);
+		//robot.driveFigureEight();
+		//robot.driveDistance(0.3);
 		
 		
 		
