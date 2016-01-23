@@ -22,6 +22,7 @@
 
 import java.io.*;
 import lejos.remote.nxt.*;
+import lejos.utility.Delay;
 import lejos.hardware.Bluetooth;
 import lejos.hardware.Button;
 import lejos.hardware.motor.Motor;
@@ -37,8 +38,7 @@ public class NXTtr
   public static int commandValue,transmitReceived;
   public static boolean[] control = new boolean[6];
   public static boolean[] command = new boolean[6];
-
-   
+  
  public static void main(String [] args)
  {
   connect();
@@ -102,14 +102,14 @@ public class NXTtr
   if(direction[0] == true)
     {
      Motor.A.forward(); 
-      Motor.D.forward();
-      }
+     Motor.D.forward();
+     }
  
   if(direction[1] == true)
     {
-     Motor.A.backward(); 
+	  Motor.A.backward(); 
       Motor.D.backward();
-      }
+    }
    
   if(direction[2] == true)
     {

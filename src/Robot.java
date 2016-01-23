@@ -61,6 +61,9 @@ public class Robot {
 	}
 	
 	public void driveCircle(){
+		
+		this.sweepAngle(360);
+		/*
 		left.resetTachoCount();
 		//System.out.println("Left tacho count: " + left.getTachoCount());
 		left.setPower(power);
@@ -69,6 +72,7 @@ public class Robot {
 			left.forward();
 		}
 	    left.stop();
+	    */
 	}
 	
 	public void driveRectangle(){
@@ -86,31 +90,11 @@ public class Robot {
 		//turnRight();
 	}
 	
-	public void driveFigureEight(){
+	public void driveFigureEight() {	
 		
-		left.resetTachoCount();
-		left.setPower(power);
-		right.setPower(0);
-		while(left.getTachoCount() < 850){
-			left.forward();
-		}
-	    left.stop();
-	    
-	    right.resetTachoCount();
-	    right.setPower(power);
-		left.setPower(0);
-		while(right.getTachoCount() < 1700){
-			right.forward();
-		}
-	    right.stop();
-	    
-	    left.resetTachoCount();
-	    left.setPower(power);
-		right.setPower(0);
-		while(left.getTachoCount() < 850){
-			left.forward();
-		}
-	    left.stop();
+		this.sweepAngle(355);
+		this.sweepAngle(-355);
+		
 	}
 	
 	public void deadReckoning(int [][] command){
@@ -141,9 +125,6 @@ public class Robot {
 				this.y += deltaY;
 				this.heading += deltaH;
 				
-				//System.out.println("X pos(cm): " + Math.round(this.x*100));
-				//System.out.println("Y pos(cm): " + Math.round(this.y*100));		
-				
 				if(this.heading < 0){
 					this.heading += 2*Math.PI;
 				}else if(this.heading > 2*Math.PI){
@@ -159,11 +140,36 @@ public class Robot {
 		}
 		System.out.println("X pos(cm): " + Math.round(this.x*100));
 		System.out.println("Y pos(cm): " + Math.round(this.y*100));
-		System.out.println("Heading: " + Math.round(this.heading));
+		System.out.println("Heading: " + Math.round(Math.toDegrees(this.heading)));
 		Delay.msDelay(2000);
 		System.out.println("Press button to continue");
 		Button.waitForAnyPress();
 		
+	}
+	
+	public void sweepAngle(double angle){
+		System.out.println("Turning: " + angle + " degrees");
+		int ticks = (int) ((Math.toRadians(Math.abs(angle)) * 2) / this.radiansPerTick);
+
+		
+		
+		if(angle < 0){
+			right.resetTachoCount();
+			while( right.getTachoCount() <= ticks){
+				left.setPower(0);
+				right.setPower(power);
+				right.forward();
+	    	}
+		}else{
+			left.resetTachoCount();
+			while( left.getTachoCount() <= ticks){
+				right.setPower(0);
+				left.setPower(power);
+				left.forward();
+	    	}	
+		}
+		right.stop();
+	    left.stop();
 	}
 	
 	/**
@@ -179,19 +185,22 @@ public class Robot {
 		
 		if(angle < 0){
 			right.resetTachoCount();
-			while( right.getTachoCount() <= ticks){
-				left.setPower(0);
+			while( right.getTachoCount() <= ticks/2){
+				//left.setPower(0);
 				right.setPower(power);
+				left.setPower(power);
 				right.forward();
-				//left.backward();
+				left.backward();
 	    	}
 		}else{
 			left.resetTachoCount();
-			while( left.getTachoCount() <= ticks){
+			while( left.getTachoCount() <= ticks/2){
+				//left.setPower(power);
+				//right.setPower(0);
 				left.setPower(power);
-				right.setPower(0);
+				right.setPower(power);
 				left.forward();
-				//right.backward();
+				right.backward();
 	    	}	
 		}
 		right.stop();
@@ -214,28 +223,7 @@ public class Robot {
 		right.stop();
 	}
 	
-	public static void main(String[] args) {
-
-		Robot robot = new Robot(55, 0, 0, 0);
-		
-		
-		
-		
-		int[][] command = {
-			      { 80, 60, 2},
-			      { 60, 60, 1},
-			      {-50, 80, 2}
-			    };
-		
-		//robot.deadReckoning(command);
-		robot.driveRectangle();
-		//robot.turnAngle(-90);
-		//robot.driveFigureEight();
-		//robot.driveDistance(0.3);
-		
-		
-		
-	}
+	
 
 }
 
