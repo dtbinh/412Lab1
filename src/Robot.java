@@ -62,16 +62,25 @@ public class Robot {
 	    left.stop();
 	}
 	
+	public void errorStraight() {
+		int command[][] = {{50,50,2}};
+		this.deadReckoning(command);
+	}
+	
+	
 	public void errorGyro() {
 		EV3GyroSensor gyro = new EV3GyroSensor(LocalEV3.get().getPort("S2"));
 		SensorMode angleProvider = (SensorMode) gyro.getAngleMode();
 		gyro.reset();
 		float[] angle = {0};
 		
+		left.resetTachoCount();
+		right.resetTachoCount();
+		
 		long timeNow = System.currentTimeMillis();
 		left.setPower(power);
 		right.setPower(power);
-		while (System.currentTimeMillis() - timeNow < 3000) {
+		while (System.currentTimeMillis() - timeNow < 2000) {
 			left.forward();
 			right.forward();
 			angleProvider.fetchSample(angle, 0);
@@ -79,19 +88,10 @@ public class Robot {
 		}
 		left.stop();
 		right.stop();
+		System.out.println(left.getTachoCount());
+		System.out.println(right.getTachoCount());
 		Button.waitForAnyPress();
 		
-		timeNow = System.currentTimeMillis();
-		left.setPower(power);
-		right.setPower(0);
-		
-		while (System.currentTimeMillis() - timeNow < 4000) {
-			left.forward();
-			angleProvider.fetchSample(angle, 0);
-			System.out.println(angle[0]);
-		}
-		left.stop();
-		Button.waitForAnyPress();
 	}
 	
 	public void errorRotating() {
@@ -164,7 +164,7 @@ public class Robot {
 	}
 	
 	public void deadReckoning(int [][] command){
-		for(int i = 0; i<3; i++){
+		for(int i = 0; i<command.length; i++){
 			
 			double deltaX, deltaY, deltaH, distance;
 			
@@ -213,7 +213,7 @@ public class Robot {
 		
 	}
 	
-	public void sweepAngle(double angle){
+	public void turnAngle(double angle){
 		System.out.println("Turning: " + angle + " degrees");
 		int ticks = (int) ((Math.toRadians(Math.abs(angle)) * 2) / this.radiansPerTick);
 
@@ -221,17 +221,22 @@ public class Robot {
 		
 		if(angle < 0){
 			right.resetTachoCount();
-			while( right.getTachoCount() <= ticks){
-				left.setPower(0);
+			while( right.getTachoCount() <= ticks/2){
+				//left.setPower(0);
 				right.setPower(power);
+				left.setPower(power);
 				right.forward();
+				left.backward();
 	    	}
 		}else{
 			left.resetTachoCount();
-			while( left.getTachoCount() <= ticks){
-				right.setPower(0);
+			while( left.getTachoCount() <= ticks/2){
+				//left.setPower(power);
+				//right.setPower(0);
 				left.setPower(power);
+				right.setPower(power);
 				left.forward();
+				right.backward();
 	    	}	
 		}
 		right.stop();
@@ -297,10 +302,17 @@ public class Robot {
 			      {-50, 80, 2}
 			    };
 		
+		//int [][] command = {
+		//		{50, 50, 2}
+		//	};
+		
+		//robot.driveDistance(30);
+		
 		//robot.deadReckoning(command);
 		//robot.errorMovingStraight();
 		//robot.errorRotating();
 		robot.errorGyro();
+		//robot.errorStraight();
 		//robot.driveRectangle();
 		//robot.turnAngle(360);
 		//robot.turnAngle(-90);

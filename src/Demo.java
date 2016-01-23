@@ -37,6 +37,7 @@ public class Demo {
 		//bv.aggressive();
 		//bv.coward();
 		//bv.love();
+		//bv.explore();
 		
 		
 		
@@ -56,7 +57,7 @@ public class Demo {
 		//robot.driveFigureEight();
 		//robot.driveDistance(0.3);
 		
-		robot.driveCircle();
+		//robot.driveCircle();
 		
 		
 	}
