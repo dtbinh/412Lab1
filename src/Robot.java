@@ -1,6 +1,8 @@
 import lejos.hardware.Button;
+import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.port.MotorPort;
 import lejos.utility.Delay;
+import lejos.hardware.sensor.*;
 
 public class Robot {
 	
@@ -19,8 +21,8 @@ public class Robot {
 		
 		this.power = power;
 		
-		left.setPower(power);
-	    right.setPower(power);
+		//left.setPower(power);
+	    //right.setPower(power);
 	    
 	    distancePerTick = (Math.PI*0.056)/360;
 	    ticksPerRotation = (2*Math.PI*0.05875)/ distancePerTick;
@@ -58,6 +60,70 @@ public class Robot {
     	}
 		right.stop();
 	    left.stop();
+	}
+	
+	public void errorGyro() {
+		EV3GyroSensor gyro = new EV3GyroSensor(LocalEV3.get().getPort("S2"));
+		SensorMode angleProvider = (SensorMode) gyro.getAngleMode();
+		gyro.reset();
+		float[] angle = {0};
+		
+		long timeNow = System.currentTimeMillis();
+		left.setPower(power);
+		right.setPower(power);
+		while (System.currentTimeMillis() - timeNow < 3000) {
+			left.forward();
+			right.forward();
+			angleProvider.fetchSample(angle, 0);
+			System.out.println(angle[0]);
+		}
+		left.stop();
+		right.stop();
+		Button.waitForAnyPress();
+		
+		timeNow = System.currentTimeMillis();
+		left.setPower(power);
+		right.setPower(0);
+		
+		while (System.currentTimeMillis() - timeNow < 4000) {
+			left.forward();
+			angleProvider.fetchSample(angle, 0);
+			System.out.println(angle[0]);
+		}
+		left.stop();
+		Button.waitForAnyPress();
+	}
+	
+	public void errorRotating() {
+		EV3GyroSensor gyro = new EV3GyroSensor(LocalEV3.get().getPort("S2"));
+		SensorMode angleProvider = (SensorMode) gyro.getAngleMode();
+		gyro.reset();
+		float[] angle = {0};
+		
+		long timeNow = System.currentTimeMillis();
+		left.setPower(power);
+		right.setPower(0);
+		
+		while (System.currentTimeMillis() - timeNow < 3000) {
+			left.forward();
+			angleProvider.fetchSample(angle, 0);
+			System.out.println(angle[0]);
+		}
+		left.stop();
+		Button.waitForAnyPress();
+		
+	}
+	
+	public void gyroMeasure(){
+		EV3GyroSensor gyro = new EV3GyroSensor(LocalEV3.get().getPort("S2"));
+		SensorMode angleProvider = (SensorMode) gyro.getAngleMode();
+		gyro.reset();
+		float[] angle = {0};
+		for (int i = 0; i < 8; i++){
+			angleProvider.fetchSample(angle, 0);
+			System.out.println(angle[0]);
+		}
+		
 	}
 	
 	public void driveCircle(){
@@ -177,7 +243,7 @@ public class Robot {
 	 * 
 	 * Positive is clockwise , negative is counter clockwise
 	 */
-	public void turnAngle(double angle){
+	public void sweepAngle(double angle){
 		System.out.println("Turning: " + angle + " degrees");
 		int ticks = (int) ((Math.toRadians(Math.abs(angle)) * 2) / this.radiansPerTick);
 
@@ -185,22 +251,17 @@ public class Robot {
 		
 		if(angle < 0){
 			right.resetTachoCount();
-			while( right.getTachoCount() <= ticks/2){
-				//left.setPower(0);
+			while( right.getTachoCount() <= ticks){
+				left.setPower(0);
 				right.setPower(power);
-				left.setPower(power);
 				right.forward();
-				left.backward();
 	    	}
 		}else{
 			left.resetTachoCount();
-			while( left.getTachoCount() <= ticks/2){
-				//left.setPower(power);
-				//right.setPower(0);
+			while( left.getTachoCount() <= ticks){
+				right.setPower(0);
 				left.setPower(power);
-				right.setPower(power);
 				left.forward();
-				right.backward();
 	    	}	
 		}
 		right.stop();
@@ -223,7 +284,34 @@ public class Robot {
 		right.stop();
 	}
 	
-	
+	public static void main(String[] args) {
+
+		Robot robot = new Robot(55, 0, 0, 0);
+		
+		
+		
+		
+		int[][] command = {
+			      { 80, 60, 2},
+			      { 60, 60, 1},
+			      {-50, 80, 2}
+			    };
+		
+		//robot.deadReckoning(command);
+		//robot.errorMovingStraight();
+		//robot.errorRotating();
+		robot.errorGyro();
+		//robot.driveRectangle();
+		//robot.turnAngle(360);
+		//robot.turnAngle(-90);
+		//robot.turnAngle(90);
+		//robot.driveFigureEight();
+		//robot.gyroMeasure();
+		//robot.driveDistance(0.3);
+		
+		
+		
+	}
 
 }
 
