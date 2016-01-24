@@ -1,4 +1,8 @@
 /*
+ * Retrieved from CMPUT 412 course website http://ugweb.cs.ualberta.ca/~vis/courses/robotics/: 
+ * 	 -Added bluetooth code that works with ev3
+ * 
+ * 
  * September 21, 2009
  * Author by Tawat Atigarbodee
  *
@@ -18,6 +22,10 @@
  * Note: This program is a partial of my project file.
  * I use “USBSend” and “USBReceive” created by Lawrie Griffiths
  * as a pattern for creating USB communication between PC and NXT.
+ * 
+ * 
+ *
+ * 
  */
 
 import java.io.*;
@@ -178,7 +186,6 @@ public class NXTtr
     BTLink = Bluetooth.getNXTCommConnector().waitForConnection(8000, NXTConnection.RAW);    
 	dataOut = BTLink.openDataOutputStream();
 	dataIn = BTLink.openDataInputStream();
-
  }//End connect
  
  public static int getSpeed(boolean[] D)

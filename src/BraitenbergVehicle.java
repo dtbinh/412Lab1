@@ -2,7 +2,10 @@ import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.NXTLightSensor;
 import lejos.hardware.sensor.SensorMode;
-
+/*
+ * Braitenberg vehicle implementation that has the following behaviours:
+ * coward, aggressive, love and explore
+ */
 public class BraitenbergVehicle {
 	
 	NXTLightSensor left; 

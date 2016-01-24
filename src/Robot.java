@@ -3,7 +3,9 @@ import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.port.MotorPort;
 import lejos.utility.Delay;
 import lejos.hardware.sensor.*;
-
+/*
+ * Robot class implements shape drawing, and dead reckoning with Lejos EV3
+ */
 public class Robot {
 	
 	RobotMotor left; 
@@ -20,9 +22,6 @@ public class Robot {
 		this.right = new RobotMotor (MotorPort.D);	
 		
 		this.power = power;
-		
-		//left.setPower(power);
-	    //right.setPower(power);
 	    
 	    distancePerTick = (Math.PI*0.056)/360;
 	    ticksPerRotation = (2*Math.PI*0.05875)/ distancePerTick;
@@ -31,8 +30,6 @@ public class Robot {
 	    this.x = x;
 	    this.y = y;
 	}
-	
-	
 	
 	public void driveStraight(int delay){
 		 left.resetTachoCount();
@@ -141,7 +138,10 @@ public class Robot {
 		this.sweepAngle(-355);
 	}
 	
-	// Deadreckoning. Figures out x and y coordinates and heading.
+	/*
+	 *  Deadreckoning. Figures out x and y coordinates and heading, while following
+	 *  given command.
+	 */
 	public void deadReckoning(int [][] command){
 		for(int i = 0; i<command.length; i++){
 			
@@ -170,6 +170,7 @@ public class Robot {
 				this.y += deltaY;
 				this.heading += deltaH;
 				
+				//bounds heading between 0 and 2*Pi
 				if(this.heading < 0){
 					this.heading += 2*Math.PI;
 				}else if(this.heading > 2*Math.PI){
@@ -220,18 +221,11 @@ public class Robot {
 	    left.stop();
 	}
 	
-	/**
-	 * Turns robot passed angle
-	 * 
-	 * Positive is clockwise , negative is counter clockwise
-	 */
 	// Sweeps angle. Using one wheel as point around which to rotate.
 	public void sweepAngle(double angle){
 		System.out.println("Turning: " + angle + " degrees");
 		int ticks = (int) ((Math.toRadians(Math.abs(angle)) * 2) / this.radiansPerTick);
 
-		
-		
 		if(angle < 0){
 			right.resetTachoCount();
 			while( right.getTachoCount() <= ticks){

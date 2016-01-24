@@ -1,4 +1,9 @@
 /*
+ * Retrieved from CMPUT 412 course website http://ugweb.cs.ualberta.ca/~vis/courses/robotics/: 
+ * 	-Added bluetooth code that works with ev3
+ *  -Requires jna jar added to lejos EV3 runtime
+ *
+ * 
  * September 21, 2009
  * Author Tawat Atigarbodee
  *
@@ -20,6 +25,7 @@
  * Note: This program is a partial of my project file.
  * I use “USBSend” and “USBReceive” created by Lawrie Griffiths
  * as a pattern for creating USB communication between PC and NXT.
+ *
  *
  */
 
@@ -235,17 +241,16 @@ public class NXTremoteControl_TA extends JFrame
 
   }//End ButtonHandler
 
+  /*
+   * Added bluetooth code that works with ev3
+   */
   public static void connect()
   {
 	  link = new BTConnector();
-
-		//connects directly from EV3 blocks MAC address
 	  BTConnection btc = link.connect("00:16:53:44:9B:36", NXTConnection.RAW);
-
 	  outData = btc.openDataOutputStream();
-	
 	  System.out.println("\nEV3 is Connected");   
-  }//End connect
+  }
   public static void disconnect()
   {
      try{
