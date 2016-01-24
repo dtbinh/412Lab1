@@ -29,24 +29,7 @@ public class BraitenbergVehicle {
 	}
 	
 	
-	public void powerAgressive(float left, float right){
-		
-		float ratio = left/right;
-		float diff = right - left;
-		
-		
-		if(diff > 0){
-			powerR -= 0.1;
-			powerL += 0.1;
-			//powerL = (int) (powerR + powerR * ratio);
-		}else{
-			powerR += 0.1;
-			powerL -= 0.1;	
-			//powerR = (int) (powerL + powerL * ratio);
-		}
-		
-	}
-	
+	// Aggressive behaviour. Right sensor powers left motor, left sensor powers right motor.
 	public void aggressive(){
 		
 		smL = left.getAmbientMode();
@@ -58,7 +41,6 @@ public class BraitenbergVehicle {
 			smL.fetchSample(arraySM, 0);
 			smR.fetchSample(arraySM, 1);
 			
-			//powerAgressive(arraySM[0],arraySM[1]);
 			
 			leftMotor.setPower((int) (arraySM[1]*100));
 			rightMotor.setPower((int) (arraySM[0]*100));
@@ -68,11 +50,10 @@ public class BraitenbergVehicle {
 			
 			System.out.println("left: " + arraySM[0]);
 			System.out.println("right: " + arraySM[1]);
-			//System.out.println(powerR);
-			//Delay.msDelay(10);
 		}
 	}
 	
+	// Coward behaviour. Left sensor powers left motor, right sensor powers right motor.
 	public void coward(){
 		smL = left.getAmbientMode();
 		smR = right.getAmbientMode();
@@ -82,7 +63,6 @@ public class BraitenbergVehicle {
 			smL.fetchSample(arraySM, 0);
 			smR.fetchSample(arraySM, 1);
 			
-			//powerAgressive(arraySM[0],arraySM[1]);
 			
 			leftMotor.setPower((int) (arraySM[0]*100));
 			rightMotor.setPower((int) (arraySM[1]*100));
@@ -95,6 +75,7 @@ public class BraitenbergVehicle {
 		}
 	}
 	
+	// Love behaviour. Inhibitory feedback. Left sensor powers left motor, right sensor powers right motor.
 	public void love(){
 		smL = left.getAmbientMode();
 		smR = right.getAmbientMode();
@@ -104,7 +85,6 @@ public class BraitenbergVehicle {
 			smL.fetchSample(arraySM, 0);
 			smR.fetchSample(arraySM, 1);
 			
-			//powerAgressive(arraySM[0],arraySM[1]);
 			
 			leftMotor.setPower((int) (((1/arraySM[0])*100))%100);
 			rightMotor.setPower((int) (((1/arraySM[1])*100))%100);
@@ -117,6 +97,7 @@ public class BraitenbergVehicle {
 		}
 	}
 	
+	// Explore behaviour. Inhibitory feedback. Left sensor powers right motor, right sensor powers left motor.
 	public void explore(){
 		smL = left.getAmbientMode();
 		smR = right.getAmbientMode();
@@ -126,7 +107,6 @@ public class BraitenbergVehicle {
 			smL.fetchSample(arraySM, 0);
 			smR.fetchSample(arraySM, 1);
 			
-			//powerAgressive(arraySM[0],arraySM[1]);
 			
 			leftMotor.setPower((int) (((1/arraySM[1])*100))%100);
 			rightMotor.setPower((int) (((1/arraySM[0])*100))%100);
