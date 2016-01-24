@@ -62,9 +62,22 @@ public class Robot {
 	    left.stop();
 	}
 	
+	public void shapes() {
+		this.driveRectangle();
+		Button.waitForAnyPress();
+		this.driveCircle();
+		Button.waitForAnyPress();
+		this.driveFigureEight();
+		Button.waitForAnyPress();
+	}
+	
 	public void errorStraight() {
-		int command[][] = {{50,50,2}};
+		int command[][] = {{90,90,2}};
 		this.deadReckoning(command);
+	}
+	
+	public void errorRotating() {
+		this.sweepAngle(45);
 	}
 	
 	
@@ -78,8 +91,8 @@ public class Robot {
 		right.resetTachoCount();
 		
 		long timeNow = System.currentTimeMillis();
-		left.setPower(power);
-		right.setPower(power);
+		left.setPower(70);
+		right.setPower(70);
 		while (System.currentTimeMillis() - timeNow < 2000) {
 			left.forward();
 			right.forward();
@@ -94,7 +107,7 @@ public class Robot {
 		
 	}
 	
-	public void errorRotating() {
+	public void errorRotating2() {
 		EV3GyroSensor gyro = new EV3GyroSensor(LocalEV3.get().getPort("S2"));
 		SensorMode angleProvider = (SensorMode) gyro.getAngleMode();
 		gyro.reset();
@@ -129,16 +142,6 @@ public class Robot {
 	public void driveCircle(){
 		
 		this.sweepAngle(360);
-		/*
-		left.resetTachoCount();
-		//System.out.println("Left tacho count: " + left.getTachoCount());
-		left.setPower(power);
-		right.setPower(0);
-		while(left.getTachoCount() < 1700){
-			left.forward();
-		}
-	    left.stop();
-	    */
 	}
 	
 	public void driveRectangle(){
@@ -290,38 +293,6 @@ public class Robot {
 	}
 	
 	public static void main(String[] args) {
-
-		Robot robot = new Robot(55, 0, 0, 0);
-		
-		
-		
-		
-		int[][] command = {
-			      { 80, 60, 2},
-			      { 60, 60, 1},
-			      {-50, 80, 2}
-			    };
-		
-		//int [][] command = {
-		//		{50, 50, 2}
-		//	};
-		
-		//robot.driveDistance(30);
-		
-		//robot.deadReckoning(command);
-		//robot.errorMovingStraight();
-		//robot.errorRotating();
-		robot.errorGyro();
-		//robot.errorStraight();
-		//robot.driveRectangle();
-		//robot.turnAngle(360);
-		//robot.turnAngle(-90);
-		//robot.turnAngle(90);
-		//robot.driveFigureEight();
-		//robot.gyroMeasure();
-		//robot.driveDistance(0.3);
-		
-		
 		
 	}
 

@@ -2,7 +2,6 @@ import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.NXTLightSensor;
 import lejos.hardware.sensor.SensorMode;
-import lejos.utility.Delay;
 
 public class BraitenbergVehicle {
 	
