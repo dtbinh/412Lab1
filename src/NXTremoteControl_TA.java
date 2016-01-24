@@ -31,9 +31,6 @@ import lejos.remote.nxt.NXTConnection;
 import lejos.remote.nxt.BTConnection;
 import lejos.remote.nxt.BTConnector;
 
-
-
-
 public class NXTremoteControl_TA extends JFrame
 {
   public static JButton quit, connect;
