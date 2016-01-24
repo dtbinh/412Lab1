@@ -1,6 +1,8 @@
 import lejos.hardware.Button;
+import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.port.MotorPort;
 import lejos.utility.Delay;
+import lejos.hardware.sensor.*;
 
 public class Robot {
 	
@@ -19,8 +21,8 @@ public class Robot {
 		
 		this.power = power;
 		
-		left.setPower(power);
-	    right.setPower(power);
+		//left.setPower(power);
+	    //right.setPower(power);
 	    
 	    distancePerTick = (Math.PI*0.056)/360;
 	    ticksPerRotation = (2*Math.PI*0.05875)/ distancePerTick;
@@ -60,45 +62,88 @@ public class Robot {
 	    left.stop();
 	}
 	
-	public void driveCircle(){
+	// Draws a rectangle, circle, and figure-eight.
+	public void shapes() {
+		this.driveRectangle();
+		Button.waitForAnyPress();
+		this.driveCircle();
+		Button.waitForAnyPress();
+		this.driveFigureEight();
+		Button.waitForAnyPress();
+	}
+	
+	public void errorStraight() {
+		int command[][] = {{90,90,2}};
+		this.deadReckoning(command);
+	}
+	
+	public void errorRotating() {
+		this.sweepAngle(45);
+	}
+	
+	// Measures horizontal deviation from a straight line using a gyroscope.
+	public void errorGyro() {
+		EV3GyroSensor gyro = new EV3GyroSensor(LocalEV3.get().getPort("S2"));
+		SensorMode angleProvider = (SensorMode) gyro.getAngleMode();
+		gyro.reset();
+		float[] angle = {0};
 		
-		this.sweepAngle(360);
-		/*
 		left.resetTachoCount();
-		//System.out.println("Left tacho count: " + left.getTachoCount());
-		left.setPower(power);
-		right.setPower(0);
-		while(left.getTachoCount() < 1700){
+		right.resetTachoCount();
+		
+		long timeNow = System.currentTimeMillis();
+		left.setPower(70);
+		right.setPower(70);
+		while (System.currentTimeMillis() - timeNow < 2000) {
 			left.forward();
+			right.forward();
+			angleProvider.fetchSample(angle, 0);
+			System.out.println(angle[0]);
 		}
-	    left.stop();
-	    */
+		left.stop();
+		right.stop();
+		System.out.println(left.getTachoCount());
+		System.out.println(right.getTachoCount());
+		Button.waitForAnyPress();
+		
+	}
+	
+	
+	public void gyroMeasure(){
+		EV3GyroSensor gyro = new EV3GyroSensor(LocalEV3.get().getPort("S2"));
+		SensorMode angleProvider = (SensorMode) gyro.getAngleMode();
+		gyro.reset();
+		float[] angle = {0};
+		for (int i = 0; i < 8; i++){
+			angleProvider.fetchSample(angle, 0);
+			System.out.println(angle[0]);
+		}
+		
+	}
+	
+	public void driveCircle(){
+		this.sweepAngle(360);
 	}
 	
 	public void driveRectangle(){
 		driveStraight(2000);
 		turnAngle(90);
-		//turnRight();
 		driveStraight(1000);
 		turnAngle(90);
-		//turnRight();
 		driveStraight(2000);
 		turnAngle(90);
-		//turnRight();
 		driveStraight(1000);
 		turnAngle(90);
-		//turnRight();
 	}
 	
 	public void driveFigureEight() {	
-		
 		this.sweepAngle(355);
 		this.sweepAngle(-355);
-		
 	}
 	
+	// Deadreckoning. Figures out x and y coordinates and heading.
 	public void deadReckoning(int [][] command){
-		for(int i = 0; i<3; i++){
+		for(int i = 0; i<command.length; i++){
 			
 			double deltaX, deltaY, deltaH, distance;
 			
@@ -147,6 +192,40 @@ public class Robot {
 		
 	}
 	
+	// Rotates wheel in opposite directions to turn the supplied angle.
+	public void turnAngle(double angle){
+		System.out.println("Turning: " + angle + " degrees");
+		int ticks = (int) ((Math.toRadians(Math.abs(angle)) * 2) / this.radiansPerTick);
+
+		
+		
+		if(angle < 0){
+			right.resetTachoCount();
+			while( right.getTachoCount() <= ticks/2){
+				right.setPower(power);
+				left.setPower(power);
+				right.forward();
+				left.backward();
+	    	}
+		}else{
+			left.resetTachoCount();
+			while( left.getTachoCount() <= ticks/2){
+				left.setPower(power);
+				right.setPower(power);
+				left.forward();
+				right.backward();
+	    	}	
+		}
+		right.stop();
+	    left.stop();
+	}
+	
+	/**
+	 * Turns robot passed angle
+	 * 
+	 * Positive is clockwise , negative is counter clockwise
+	 */
+	// Sweeps angle. Using one wheel as point around which to rotate.
 	public void sweepAngle(double angle){
 		System.out.println("Turning: " + angle + " degrees");
 		int ticks = (int) ((Math.toRadians(Math.abs(angle)) * 2) / this.radiansPerTick);
@@ -172,41 +251,7 @@ public class Robot {
 	    left.stop();
 	}
 	
-	/**
-	 * Turns robot passed angle
-	 * 
-	 * Positive is clockwise , negative is counter clockwise
-	 */
-	public void turnAngle(double angle){
-		System.out.println("Turning: " + angle + " degrees");
-		int ticks = (int) ((Math.toRadians(Math.abs(angle)) * 2) / this.radiansPerTick);
-
-		
-		
-		if(angle < 0){
-			right.resetTachoCount();
-			while( right.getTachoCount() <= ticks/2){
-				//left.setPower(0);
-				right.setPower(power);
-				left.setPower(power);
-				right.forward();
-				left.backward();
-	    	}
-		}else{
-			left.resetTachoCount();
-			while( left.getTachoCount() <= ticks/2){
-				//left.setPower(power);
-				//right.setPower(0);
-				left.setPower(power);
-				right.setPower(power);
-				left.forward();
-				right.backward();
-	    	}	
-		}
-		right.stop();
-	    left.stop();
-	}
-	
+	// Drives the supplied distance. Using the distancePerTick calculation to turn wheels correct amount.
 	public void driveDistance(double distance){
 		double ticks = distance/this.distancePerTick;
 		
@@ -222,7 +267,6 @@ public class Robot {
 		left.stop();
 		right.stop();
 	}
-	
 	
 
 }
